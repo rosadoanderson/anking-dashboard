@@ -1,58 +1,31 @@
-# AnKing Dashboard Pro v5
+# AnKing Dashboard Pro v10
 
-Site estático pronto para GitHub Pages.
+Versão pronta para GitHub Pages, com:
+- imagens e áudios do deck funcionando
+- mídia dividida em subpastas `media_1` até `media_23`
+- modo diário por quantidade e também modo livre
+- instalação no iPhone como app (PWA)
+- filas em português: novos, aprendendo, revisão e disponíveis
+- heatmap de estudo
+- tempo total, tempo por deck e tempo da sessão
+- estatísticas por matéria
+- erradas ativas saem da fila quando o card é acertado
 
-## Recursos incluídos
-- Dashboard completo
-- Heatmap de estudo
-- Meta diária
-- Tempo total, por deck e por sessão
-- Fila tipo Anki: new / learning / review / due
-- Algoritmo SM-2 simplificado
-- Menu Matérias com títulos iguais ao menu do deck
-- Estudo por:
-  - mistura adaptativa
-  - due do dia
-  - todos os cards
-  - quantidade limitada
-  - somente erradas ativas
-  - somente acertadas
-  - revisados hoje
-  - somente novos
-  - somente learning
-  - somente review
-  - seleção manual
-- Ordem randomizada ou sequencial
-- Busca com filtros
-- Importação de decks por JSON ou CSV
-- Exclusão de decks adicionados
-- Deck original protegido
-- Exportação de backup
+## Como publicar no GitHub
+Envie para a raiz do repositório:
+- index.html
+- styles.css
+- app.js
+- cards_part1.json
+- cards_part2.json
+- cards_part3.json
+- cards_part4.json
+- manifest.json
+- service-worker.js
+- README.md
+- pasta media/
 
-## Mistura adaptativa sugerida
-- Retenção < 50%: 65% de cards errados ativos + 35% novos/due
-- Retenção entre 50% e 69%: 45% errados + 55% novos/due
-- Retenção >= 70%: 25% errados + 75% novos/due
-
-Quando um card entra em "erradas ativas":
-- ao responder Again, ele entra na fila de erradas
-- ao responder Hard/Good/Easy depois, ele sai automaticamente dessa fila
-
-## Como publicar
-1. Envie `index.html`, `styles.css`, `app.js` e `base_cards.json` para o repositório.
-2. Em Settings > Pages, publique a branch `main`.
-
-## Formato para importar JSON
-[
-  {
-    "deck": "Cardiologia::ECG",
-    "front": "Pergunta",
-    "back": "Resposta"
-  }
-]
-
-## Formato para importar CSV
-Colunas:
-- deck
-- front
-- back
+## Instalar no iPhone
+1. Abra o site no Safari
+2. Toque em Compartilhar
+3. Toque em Adicionar à Tela de Início
