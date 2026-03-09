@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnKing Study Dashboard v3</title>
+  <title>AnKing Dashboard Pro v5</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="loadingScreen" class="loading-screen">
     <div class="loading-card">
       <div class="logo-badge">AK</div>
-      <h1>AnKing Study Dashboard</h1>
-      <p>Carregando deck completo e métricas...</p>
+      <h1>AnKing Dashboard Pro</h1>
+      <p>Carregando deck completo e recursos avançados...</p>
       <div class="progress-shell"><div id="loadingBar" class="progress-bar"></div></div>
       <div id="loadingText" class="muted">Inicializando</div>
     </div>
@@ -22,8 +22,8 @@
       <div class="brand">
         <div class="logo-badge">AK</div>
         <div>
-          <h1>AnKing Study Dashboard</h1>
-          <p>v3 • erros, tempo e gestão de decks</p>
+          <h1>AnKing Dashboard Pro</h1>
+          <p>v5 • mistura adaptativa de erradas + novas</p>
         </div>
       </div>
 
@@ -32,7 +32,7 @@
         <div id="currentDeckName" class="deck-name">Todos os decks</div>
         <div class="side-actions">
           <button id="clearDeckBtn" class="btn btn-secondary">Limpar filtro</button>
-          <button id="resetStatsBtn" class="btn btn-danger">Zerar estatísticas</button>
+          <button id="resetStatsBtn" class="btn btn-danger">Zerar tudo</button>
         </div>
       </div>
 
@@ -47,7 +47,7 @@
       </nav>
 
       <div class="side-card">
-        <div class="small-label">Estrutura automática dos decks</div>
+        <div class="small-label">Estrutura dos decks</div>
         <div id="deckTree" class="deck-tree"></div>
       </div>
     </aside>
@@ -57,11 +57,11 @@
         <div class="page-header">
           <div>
             <h2>Dashboard</h2>
-            <p class="muted">Visão geral, erros e tempo dedicado.</p>
+            <p class="muted">Resumo geral, metas, heatmap, tempo e desempenho por deck.</p>
           </div>
           <div class="toolbar">
             <input id="dashboardDeckSearch" class="input" placeholder="Buscar deck..." />
-            <button id="exportStatsBtn" class="btn btn-secondary">Exportar estatísticas</button>
+            <button id="exportStatsBtn" class="btn btn-secondary">Exportar backup</button>
           </div>
         </div>
 
@@ -74,19 +74,49 @@
           <div class="panel stat-card"><div class="small-label">Tempo total</div><div id="totalTimeValue" class="stat-value">00:00:00</div></div>
         </div>
 
+        <div class="stats-grid two-col">
+          <div class="panel">
+            <div class="row-between wrap-gap">
+              <h3>Meta diária</h3>
+              <div class="toolbar">
+                <input id="dailyGoalInput" class="input small-input" type="number" min="1" value="50" />
+                <button id="saveGoalBtn" class="btn btn-primary">Salvar</button>
+              </div>
+            </div>
+            <div class="progress-shell"><div id="goalProgressBar" class="progress-bar"></div></div>
+            <div id="goalProgressText" class="muted top-space-sm"></div>
+          </div>
+
+          <div class="panel">
+            <div class="row-between">
+              <h3>Fila</h3>
+              <span id="studiedUniqueText" class="tag">0 estudados</span>
+            </div>
+            <div id="queueSummary" class="summary-grid compact"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="row-between">
+            <h3>Heatmap de estudo</h3>
+            <span class="tag">Últimos 140 dias</span>
+          </div>
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+
         <div class="panel">
           <div class="row-between">
             <h3>Progresso geral</h3>
-            <span id="studiedUniqueText" class="tag">0 estudados</span>
+            <span id="visibleDecksText" class="tag">0 decks</span>
           </div>
           <div class="progress-shell"><div id="overallProgress" class="progress-bar"></div></div>
-          <p id="overallProgressText" class="muted"></p>
+          <div id="overallProgressText" class="muted top-space-sm"></div>
         </div>
 
         <div class="panel">
           <div class="row-between">
             <h3>Desempenho por deck</h3>
-            <span id="visibleDecksText" class="tag">0 decks</span>
+            <span class="tag">inclui due, novos e tempo</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -97,6 +127,8 @@
                   <th>Respondidos</th>
                   <th>Acertos</th>
                   <th>Erros</th>
+                  <th>Novos</th>
+                  <th>Due</th>
                   <th>Tempo</th>
                   <th>Retenção</th>
                 </tr>
@@ -111,7 +143,7 @@
         <div class="page-header">
           <div>
             <h2>Matérias</h2>
-            <p class="muted">Escolha uma matéria e decida como estudar.</p>
+            <p class="muted">Os títulos dos cards aparecem iguais ao menu do deck. Cada matéria mostra os atalhos principais.</p>
           </div>
           <div class="toolbar">
             <input id="subjectFilterInput" class="input" placeholder="Filtrar matérias..." />
@@ -124,12 +156,12 @@
         <div class="page-header">
           <div>
             <h2>Modo de estudo</h2>
-            <p class="muted">Estude todos, uma quantidade, só os errados, ou selecione manualmente.</p>
+            <p class="muted">Mistura adaptativa de erradas + novas e filas tipo Anki com SM-2 simplificado.</p>
           </div>
         </div>
 
         <div class="panel">
-          <div class="study-config-grid five">
+          <div class="study-config-grid six">
             <div>
               <label class="small-label">Matéria / deck</label>
               <select id="studyDeckSelect" class="input"></select>
@@ -137,16 +169,23 @@
             <div>
               <label class="small-label">Modo</label>
               <select id="studyModeSelect" class="input">
-                <option value="all">Todos os cards do deck</option>
+                <option value="adaptiveMix">Mistura adaptativa</option>
+                <option value="due">Due do dia</option>
+                <option value="all">Todos os cards</option>
                 <option value="count">Quantidade limitada</option>
-                <option value="wrong">Somente cards errados</option>
+                <option value="wrong">Somente erradas ativas</option>
+                <option value="correct">Somente acertadas</option>
+                <option value="reviewedToday">Revisados hoje</option>
+                <option value="new">Somente novos</option>
+                <option value="learning">Somente learning</option>
+                <option value="review">Somente review</option>
                 <option value="manual">Selecionar cards manualmente</option>
               </select>
             </div>
             <div>
               <label class="small-label">Ordem</label>
               <select id="studyOrderSelect" class="input">
-                <option value="random">Randomizado automático</option>
+                <option value="random">Randomizada</option>
                 <option value="sequential">Sequencial</option>
               </select>
             </div>
@@ -158,9 +197,13 @@
               <label class="small-label">Tempo da sessão</label>
               <div id="sessionTimer" class="timer-box">00:00:00</div>
             </div>
+            <div>
+              <label class="small-label">Progresso da sessão</label>
+              <div class="progress-shell"><div id="sessionProgressBar" class="progress-bar"></div></div>
+            </div>
           </div>
 
-          <div id="wrongStudyInfo" class="info-box hidden"></div>
+          <div id="studyInfoBox" class="info-box hidden"></div>
 
           <div id="manualPickerWrap" class="manual-picker hidden">
             <div class="row-between wrap-gap">
@@ -187,13 +230,18 @@
           <div class="row-between wrap-gap">
             <div id="studyMeta" class="tag">Deck</div>
             <div id="studyCounter" class="tag">Card 1 / 1</div>
+            <div id="studyStateTag" class="tag">new</div>
+            <div id="studyDueTag" class="tag">due</div>
           </div>
+          <div id="studyTitle" class="study-title"></div>
           <div id="studyFront" class="flashcard"></div>
           <div id="studyBack" class="flashcard answer hidden"></div>
           <div class="study-actions">
             <button id="showAnswerBtn" class="btn btn-secondary">Mostrar resposta</button>
-            <button id="correctBtn" class="btn btn-success hidden">Acertei</button>
-            <button id="wrongBtn" class="btn btn-danger hidden">Errei</button>
+            <button id="againBtn" class="btn btn-danger hidden">Again</button>
+            <button id="hardBtn" class="btn btn-secondary hidden">Hard</button>
+            <button id="goodBtn" class="btn btn-primary hidden">Good</button>
+            <button id="easyBtn" class="btn btn-success hidden">Easy</button>
             <button id="nextBtn" class="btn btn-primary hidden">Próximo</button>
           </div>
         </div>
@@ -203,11 +251,19 @@
         <div class="page-header">
           <div>
             <h2>Busca de cards</h2>
-            <p class="muted">Pesquisa rápida em frente, verso e nome do deck.</p>
+            <p class="muted">Pesquisa rápida em frente, verso, deck e filtros de fila.</p>
           </div>
           <div class="toolbar">
             <input id="cardSearchInput" class="input" placeholder="Buscar termos..." />
             <select id="searchDeckSelect" class="input"></select>
+            <select id="searchQueueSelect" class="input">
+              <option value="">Todas as filas</option>
+              <option value="new">new</option>
+              <option value="learning">learning</option>
+              <option value="review">review</option>
+              <option value="wrong">erradas ativas</option>
+              <option value="today">revisados hoje</option>
+            </select>
           </div>
         </div>
 
@@ -225,11 +281,22 @@
         <div class="page-header">
           <div>
             <h2>Decks</h2>
-            <p class="muted">Veja, adicione e remova decks adicionados depois.</p>
+            <p class="muted">Adicionar novos decks por JSON ou CSV e excluir somente os decks adicionados.</p>
           </div>
           <div class="toolbar">
             <input id="importJsonInput" type="file" accept=".json" class="input file-input" />
-            <input id="importApkgInput" type="file" accept=".apkg" class="input file-input" />
+            <input id="importCsvInput" type="file" accept=".csv,text/csv" class="input file-input" />
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="row-between">
+            <h3>Formato aceito</h3>
+            <span class="tag">deck/front/back ou matéria/pergunta/resposta</span>
+          </div>
+          <div class="prose">
+            <p>JSON: array de objetos com <strong>deck</strong>, <strong>front</strong>, <strong>back</strong>.</p>
+            <p>CSV: colunas <strong>deck</strong>, <strong>front</strong>, <strong>back</strong> ou equivalentes em português.</p>
           </div>
         </div>
 
@@ -244,7 +311,7 @@
         <div class="panel">
           <div class="row-between">
             <h3>Gerenciar decks adicionados</h3>
-            <span class="tag">Somente decks importados depois podem ser excluídos</span>
+            <span class="tag">O deck original permanece protegido</span>
           </div>
           <div id="addedDeckManager" class="results-list"></div>
         </div>
@@ -254,7 +321,7 @@
         <div class="page-header">
           <div>
             <h2>Estatísticas detalhadas</h2>
-            <p class="muted">Resumo do desempenho global, erros e tempo por deck.</p>
+            <p class="muted">Resumo do desempenho, filas, tempo, erros e repetição adaptativa por matéria.</p>
           </div>
         </div>
         <div class="stats-grid two-col">
@@ -267,9 +334,15 @@
             <div id="topDecks" class="rank-list"></div>
           </div>
         </div>
-        <div class="panel">
-          <h3>Tempo por deck</h3>
-          <div id="timePerDeckList" class="rank-list"></div>
+        <div class="stats-grid two-col">
+          <div class="panel">
+            <h3>Tempo por deck</h3>
+            <div id="timePerDeckList" class="rank-list"></div>
+          </div>
+          <div class="panel">
+            <h3>Decks com mais erro</h3>
+            <div id="worstDecksList" class="rank-list"></div>
+          </div>
         </div>
       </section>
 
@@ -282,7 +355,7 @@
         </div>
         <div class="panel prose">
           <p>Este site foi gerado a partir do seu arquivo <strong>AnKing .apkg</strong> e mantém o conteúdo completo em formato de texto para navegação local.</p>
-          <p>Os dados de desempenho e tempo são salvos apenas no seu navegador, no dispositivo em que o site for aberto.</p>
+          <p>Os dados de desempenho, filas SM-2, tempo, heatmap e meta diária são salvos apenas no navegador onde o site for aberto.</p>
           <p>Imagens e áudios do pacote foram substituídos por marcadores como <strong>[imagem]</strong> e <strong>[áudio]</strong>.</p>
           <p>Quantidade importada: <strong id="aboutCardCount"></strong> cards em <strong id="aboutDeckCount"></strong> decks.</p>
         </div>
