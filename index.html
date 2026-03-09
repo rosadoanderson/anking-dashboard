@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnKing Study Dashboard</title>
+  <title>AnKing Study Dashboard v3</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="loading-card">
       <div class="logo-badge">AK</div>
       <h1>AnKing Study Dashboard</h1>
-      <p>Carregando seu deck completo...</p>
+      <p>Carregando deck completo e métricas...</p>
       <div class="progress-shell"><div id="loadingBar" class="progress-bar"></div></div>
       <div id="loadingText" class="muted">Inicializando</div>
     </div>
@@ -23,7 +23,7 @@
         <div class="logo-badge">AK</div>
         <div>
           <h1>AnKing Study Dashboard</h1>
-          <p>Site completo com deck integral</p>
+          <p>v3 • erros, tempo e gestão de decks</p>
         </div>
       </div>
 
@@ -38,6 +38,7 @@
 
       <nav class="nav">
         <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+        <button class="nav-btn" data-view="subjects">📚 Matérias</button>
         <button class="nav-btn" data-view="study">🧠 Estudo</button>
         <button class="nav-btn" data-view="search">🔎 Busca</button>
         <button class="nav-btn" data-view="decks">🗂️ Decks</button>
@@ -56,7 +57,7 @@
         <div class="page-header">
           <div>
             <h2>Dashboard</h2>
-            <p class="muted">Visão geral do seu baralho completo importado do arquivo .apkg.</p>
+            <p class="muted">Visão geral, erros e tempo dedicado.</p>
           </div>
           <div class="toolbar">
             <input id="dashboardDeckSearch" class="input" placeholder="Buscar deck..." />
@@ -64,27 +65,13 @@
           </div>
         </div>
 
-        <div class="stats-grid">
-          <div class="panel stat-card">
-            <div class="small-label">Total de cards</div>
-            <div id="totalCards" class="stat-value">0</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="small-label">Respondidos</div>
-            <div id="reviewedCards" class="stat-value">0</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="small-label">Acertos</div>
-            <div id="correctCards" class="stat-value">0</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="small-label">Erros</div>
-            <div id="wrongCards" class="stat-value">0</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="small-label">Retenção</div>
-            <div id="accuracyRate" class="stat-value">0%</div>
-          </div>
+        <div class="stats-grid six">
+          <div class="panel stat-card"><div class="small-label">Total de cards</div><div id="totalCards" class="stat-value">0</div></div>
+          <div class="panel stat-card"><div class="small-label">Respondidos</div><div id="reviewedCards" class="stat-value">0</div></div>
+          <div class="panel stat-card"><div class="small-label">Acertos</div><div id="correctCards" class="stat-value">0</div></div>
+          <div class="panel stat-card"><div class="small-label">Erros</div><div id="wrongCards" class="stat-value">0</div></div>
+          <div class="panel stat-card"><div class="small-label">Retenção</div><div id="accuracyRate" class="stat-value">0%</div></div>
+          <div class="panel stat-card"><div class="small-label">Tempo total</div><div id="totalTimeValue" class="stat-value">00:00:00</div></div>
         </div>
 
         <div class="panel">
@@ -110,6 +97,7 @@
                   <th>Respondidos</th>
                   <th>Acertos</th>
                   <th>Erros</th>
+                  <th>Tempo</th>
                   <th>Retenção</th>
                 </tr>
               </thead>
@@ -119,25 +107,81 @@
         </div>
       </section>
 
+      <section id="subjectsView" class="view hidden">
+        <div class="page-header">
+          <div>
+            <h2>Matérias</h2>
+            <p class="muted">Escolha uma matéria e decida como estudar.</p>
+          </div>
+          <div class="toolbar">
+            <input id="subjectFilterInput" class="input" placeholder="Filtrar matérias..." />
+          </div>
+        </div>
+        <div id="subjectCardsGrid" class="subject-grid"></div>
+      </section>
+
       <section id="studyView" class="view hidden">
         <div class="page-header">
           <div>
             <h2>Modo de estudo</h2>
-            <p class="muted">Revisão manual com registro de acertos e erros por deck.</p>
-          </div>
-          <div class="toolbar">
-            <select id="studyDeckSelect" class="input"></select>
-            <select id="studyOrderSelect" class="input">
-              <option value="random">Ordem aleatória</option>
-              <option value="sequential">Ordem sequencial</option>
-            </select>
-            <button id="startStudyBtn" class="btn btn-primary">Iniciar</button>
+            <p class="muted">Estude todos, uma quantidade, só os errados, ou selecione manualmente.</p>
           </div>
         </div>
 
-        <div id="studyEmpty" class="panel empty-state">
-          Escolha um deck específico ou mantenha “Todos os decks” e clique em iniciar.
+        <div class="panel">
+          <div class="study-config-grid five">
+            <div>
+              <label class="small-label">Matéria / deck</label>
+              <select id="studyDeckSelect" class="input"></select>
+            </div>
+            <div>
+              <label class="small-label">Modo</label>
+              <select id="studyModeSelect" class="input">
+                <option value="all">Todos os cards do deck</option>
+                <option value="count">Quantidade limitada</option>
+                <option value="wrong">Somente cards errados</option>
+                <option value="manual">Selecionar cards manualmente</option>
+              </select>
+            </div>
+            <div>
+              <label class="small-label">Ordem</label>
+              <select id="studyOrderSelect" class="input">
+                <option value="random">Randomizado automático</option>
+                <option value="sequential">Sequencial</option>
+              </select>
+            </div>
+            <div>
+              <label class="small-label">Quantidade</label>
+              <input id="studyCountInput" class="input" type="number" min="1" value="20" />
+            </div>
+            <div>
+              <label class="small-label">Tempo da sessão</label>
+              <div id="sessionTimer" class="timer-box">00:00:00</div>
+            </div>
+          </div>
+
+          <div id="wrongStudyInfo" class="info-box hidden"></div>
+
+          <div id="manualPickerWrap" class="manual-picker hidden">
+            <div class="row-between wrap-gap">
+              <h3>Selecionar cards manualmente</h3>
+              <div class="toolbar">
+                <input id="manualCardSearch" class="input" placeholder="Buscar no card..." />
+                <button id="selectVisibleBtn" class="btn btn-secondary">Selecionar visíveis</button>
+                <button id="clearManualSelectionBtn" class="btn btn-secondary">Limpar seleção</button>
+              </div>
+            </div>
+            <div id="manualSelectedCount" class="muted"></div>
+            <div id="manualCardList" class="manual-card-list"></div>
+          </div>
+
+          <div class="toolbar top-space">
+            <button id="startStudyBtn" class="btn btn-primary">Iniciar estudo</button>
+            <button id="endSessionBtn" class="btn btn-secondary">Encerrar sessão</button>
+          </div>
         </div>
+
+        <div id="studyEmpty" class="panel empty-state">Configure o estudo e clique em iniciar.</div>
 
         <div id="studyCard" class="panel hidden">
           <div class="row-between wrap-gap">
@@ -180,8 +224,12 @@
       <section id="decksView" class="view hidden">
         <div class="page-header">
           <div>
-            <h2>Decks automáticos</h2>
-            <p class="muted">Todos os decks identificados a partir da estrutura do AnKing.</p>
+            <h2>Decks</h2>
+            <p class="muted">Veja, adicione e remova decks adicionados depois.</p>
+          </div>
+          <div class="toolbar">
+            <input id="importJsonInput" type="file" accept=".json" class="input file-input" />
+            <input id="importApkgInput" type="file" accept=".apkg" class="input file-input" />
           </div>
         </div>
 
@@ -192,16 +240,23 @@
           </div>
           <div id="deckBadgeList" class="deck-badges"></div>
         </div>
+
+        <div class="panel">
+          <div class="row-between">
+            <h3>Gerenciar decks adicionados</h3>
+            <span class="tag">Somente decks importados depois podem ser excluídos</span>
+          </div>
+          <div id="addedDeckManager" class="results-list"></div>
+        </div>
       </section>
 
       <section id="statsView" class="view hidden">
         <div class="page-header">
           <div>
             <h2>Estatísticas detalhadas</h2>
-            <p class="muted">Resumo do desempenho global e do deck filtrado.</p>
+            <p class="muted">Resumo do desempenho global, erros e tempo por deck.</p>
           </div>
         </div>
-
         <div class="stats-grid two-col">
           <div class="panel">
             <h3>Resumo atual</h3>
@@ -212,26 +267,28 @@
             <div id="topDecks" class="rank-list"></div>
           </div>
         </div>
+        <div class="panel">
+          <h3>Tempo por deck</h3>
+          <div id="timePerDeckList" class="rank-list"></div>
+        </div>
       </section>
 
       <section id="aboutView" class="view hidden">
         <div class="page-header">
           <div>
             <h2>Sobre o site</h2>
-            <p class="muted">Versão estática pronta para abrir localmente no navegador.</p>
+            <p class="muted">Versão estática pronta para abrir localmente ou publicar no GitHub Pages.</p>
           </div>
         </div>
-
         <div class="panel prose">
           <p>Este site foi gerado a partir do seu arquivo <strong>AnKing .apkg</strong> e mantém o conteúdo completo em formato de texto para navegação local.</p>
-          <p>Os dados de desempenho são salvos apenas no seu navegador, no dispositivo em que o site for aberto.</p>
-          <p>Imagens e áudios do pacote foram substituídos por marcadores como <strong>[imagem]</strong> e <strong>[áudio]</strong> para manter o site mais leve e fácil de abrir.</p>
+          <p>Os dados de desempenho e tempo são salvos apenas no seu navegador, no dispositivo em que o site for aberto.</p>
+          <p>Imagens e áudios do pacote foram substituídos por marcadores como <strong>[imagem]</strong> e <strong>[áudio]</strong>.</p>
           <p>Quantidade importada: <strong id="aboutCardCount"></strong> cards em <strong id="aboutDeckCount"></strong> decks.</p>
         </div>
       </section>
     </main>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>
